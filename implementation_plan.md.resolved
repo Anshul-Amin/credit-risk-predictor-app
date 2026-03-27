@@ -1,0 +1,59 @@
+# Credit Risk Prediction System
+
+This project aims to build a production-ready Credit Risk Prediction System focusing on Responsible and Explainable AI. We will enhance a local German Credit dataset by retrieving the missing target labels from the official UCI repository. We will then build an XGBoost model optimized via Optuna, audit it for fairness across demographic groups, and build an interactive Streamlit application with SHAP explainability.
+
+## User Review Required
+
+> [!IMPORTANT]  
+> Please review the Deployment section below. I will need you to be logged into your Streamlit Cloud account or be ready to log in when the browser automation begins to deploy the app. I will also attempt to use the GitHub CLI (`gh`) to create the repository `credit-risk-antigravity`.
+
+## Proposed Changes
+
+---
+
+### Project Structure & Data
+
+#### [NEW] `data/`
+Directory to store the original `german_credit_data.csv` and the merged/processed datasets.
+
+#### [NEW] `src/preprocessing.py`
+Downloads the target variable from the complete UCI German Credit dataset (`german.data`), maps `1` to `Good` and `2` to `Bad`, and joins it with the local CSV. Performs EDA, handles `NaN` values in 'Saving accounts' and 'Checking account' by categorizing them as 'Unknown', and implements techniques like SMOTE or class weights to handle class imbalance.
+
+#### [NEW] `src/train.py`
+Engineers features, encodes variables, and trains an XGBoost model. Uses Optuna for Bayesian hyperparameter optimization. Saves the resulting model and preprocessor (e.g., scalers and encoders) to `models/model.joblib`.
+
+#### [NEW] `src/fairness_audit.py`
+Implements a fairness audit. Calculates demographic parity and disparate impact metrics based on sensitive attributes: `Sex` and `Age` (e.g., assessing fairness for younger vs. older applicants).
+
+---
+
+### Application & Deployment
+
+#### [NEW] `app/streamlit_app.py`
+The main interactive web application. Features include:
+1. **Credit Score Simulator:** Interactive sidebar/form where users input profile data to get a real-time risk probability.
+2. **Why was I denied/approved?** SHAP waterfall or force plots breaking down feature contributions.
+3. **Fairness Dashboard:** Displays the parity metrics calculated from the model's test set evaluation across different demographic splits.
+
+#### [NEW] `requirements.txt`
+Dependencies including `pandas`, `xgboost`, `optuna`, `shap`, `streamlit`, `scikit-learn`, `matplotlib`, and `imbalanced-learn`.
+
+#### [NEW] `README.md`
+Professional documentation describing project setup, model design, fairness focus, and how to run the components.
+
+## Open Questions
+
+> [!WARNING]  
+> 1. **GitHub Authentication:** Are you currently authenticated with the GitHub CLI (`gh auth status`) on this machine so I can programmatically create the public repository? If not, we will need to quickly authenticate or you can create the repo manually.
+> 2. **Streamlit Deployment:** For browser deployment, I will launch a browser subagent. Do you already have a Streamlit Cloud account linked to your GitHub? The subagent will need to navigate through your account.
+
+## Verification Plan
+
+### Automated Tests
+- Execute `python src/preprocessing.py`, `python src/train.py`, and `python src/fairness_audit.py` to ensure local scripts run without errors.
+- Validate metrics file/output is cleanly generated.
+
+### Manual Verification
+- Local run: `streamlit run app/streamlit_app.py`.
+- Browser subagent will capture screenshots of the active "Fairness Audit" and "SHAP Explanations" pages as requested.
+- Deploy to Streamlit Cloud using the browser agent and return the live URL.
